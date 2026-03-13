@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Anonymous Email Tool</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      gap: 40px;
+      padding: 20px;
+    }
+
+    .container {
+      width: 50%;
+    }
+
+    .field {
+      margin-bottom: 15px;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    small {
+      color: #666;
+      display: block;
+      margin-top: 3px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="file"],
+    textarea {
+      width: 100%;
+      padding: 8px;
+      font-size: 14px;
+      margin-top: 3px;
+    }
+
+    textarea {
+      height: 80px;
+      resize: vertical;
+    }
+
+    #preview-box {
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 8px;
+      background: #fafafa;
+    }
+
+    #preview-images img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      margin-right: 10px;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+
+<!-- FORM SECTION -->
+<div class="container">
+  <form id="form"
+        action="https://improved-anon-email.anonymousjustlc31.workers.dev"
+        method="POST"
+        enctype="multipart/form-data">
+
+    <div class="field">
+      <label for="to_name">Recipient Name</label>
+      <input type="text" name="to_name" id="to_name" placeholder="Principal" required>
+    </div>
+
+    <div class="field">
+      <label for="from_name">Your Name (or Anonymous)</label>
+      <input type="text" name="from_name" id="from_name" placeholder="Anonymous" required>
+    </div>
+
+    <div class="field">
+      <label for="reply_to">Reply-To Email</label>
+      <input type="email" name="email" id="reply_to" placeholder="Optional" required>
+    </div>
+
+    <div class="field">
+      <label for="subject">Subject</label>
+      <input type="text" name="subject" id="subject" required>
+    </div>
+
+    <div class="field">
+      <label for="message">Message</label>
+      <textarea name="message" id="message" required></textarea>
+    </div>
+
+    <div class="field">
+      <label for="images">Attach Images</label>
+      <input type="file" name="attachments" id="images" accept="image/*" multiple>
+    </div>
+
+    <input type="submit" id="button" value="Send Email">
+  </form>
+</div>
+
+<!-- PREVIEW SECTION -->
+<div class="container">
+  <div id="preview-box">
+    <h3>Email Preview</h3>
+    <p><strong>To:</strong> <span id="p_to_name">—</span></p>
+    <p><strong>From:</strong> <span id="p_from_name">—</span></p>
+    <p><strong>Reply-To:</strong> <span id="p_reply_to">—</span></p>
+    <p><strong>Subject:</strong> <span id="p_subject">—</span></p>
+    <p><strong>Message:</strong> <span id="p_message">—</span></p>
+
+    <h4>Attached Images:</h4>
+    <div id="preview-images"></div>
+  </div>
+</div>
+
+<script>
+  const fields = ["to_name", "from_name", "reply_to", "subject", "message"];
+
+  fields.forEach(id => {
+    document.getElementById(id).addEventListener("input", () => {
+      document.getElementById("p_" + id).textContent =
+        document.getElementById(id).value || "—";
+    });
+  });
+
+  document.getElementById("images").addEventListener("change", function() {
+    const preview = document.getElementById("preview-images");
+    preview.innerHTML = "";
+
+    [...this.files].forEach(file => {
+      const img = document.createElement("img");
+      img.src = URL.createObjectURL(file);
+      preview.appendChild(img);
+    });
+  });
+</script>
+
+</body>
+</html>
