@@ -16,11 +16,12 @@ body {
   justify-content: center;
   gap: 40px;
   position: relative;
+  transition: background 0.3s, color 0.3s;
 }
 
-/* Dark mode (auto) */
+/* Auto dark mode */
 @media (prefers-color-scheme: dark) {
-  body {
+  body:not(.manual-light) {
     background: #000;
     color: #f5f5f7;
   }
@@ -32,12 +33,13 @@ body {
   border-radius: 18px;
   width: 420px;
   box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+  transition: background 0.3s, color 0.3s;
 }
 
 @media (prefers-color-scheme: dark) {
-  .card {
+  body:not(.manual-light) .card {
     background: #111;
-    box-shadow: 0 10px 40px rgba(255,255,255,0.05);
+    color: #fff;
   }
 }
 
@@ -55,10 +57,12 @@ input, textarea {
   font-size: 15px;
   margin-bottom: 18px;
   background: #fafafa;
+  transition: background 0.3s, color 0.3s, border 0.3s;
 }
 
 @media (prefers-color-scheme: dark) {
-  input, textarea {
+  body:not(.manual-light) input,
+  body:not(.manual-light) textarea {
     background: #1c1c1e;
     border-color: #3a3a3c;
     color: #fff;
@@ -157,12 +161,6 @@ button[type="submit"]:hover {
   border: 1px solid #d2d2d7;
 }
 
-@media (prefers-color-scheme: dark) {
-  #preview-images img {
-    border-color: #3a3a3c;
-  }
-}
-
 /* Manual dark mode override */
 body.manual-dark {
   background: #000 !important;
@@ -186,13 +184,30 @@ body.manual-dark #drop-zone {
   color: #ccc !important;
 }
 
+body.manual-light {
+  background: #f5f5f7 !important;
+  color: #1d1d1f !important;
+}
+
+body.manual-light .card {
+  background: #fff !important;
+  color: #1d1d1f !important;
+}
+
+body.manual-light input,
+body.manual-light textarea {
+  background: #fafafa !important;
+  color: #1d1d1f !important;
+  border-color: #d2d2d7 !important;
+}
+
 /* Theme toggle button */
 #theme-toggle {
   position: fixed;
   top: 16px;
   right: 16px;
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   border: none;
   background: #e5e5ea;
@@ -200,7 +215,7 @@ body.manual-dark #drop-zone {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 17px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.12);
   transition: background 0.2s, transform 0.1s;
   z-index: 20;
@@ -211,7 +226,7 @@ body.manual-dark #drop-zone {
   transform: translateY(-1px);
 }
 
-/* Intro overlay */
+/* INTRO OVERLAY */
 #intro-overlay {
   position: fixed;
   inset: 0;
@@ -220,7 +235,7 @@ body.manual-dark #drop-zone {
   align-items: center;
   justify-content: center;
   z-index: 50;
-  animation: fadeOut 1s ease 2.5s forwards;
+  animation: fadeOut 1s ease 3s forwards;
 }
 
 #intro-content {
@@ -229,20 +244,32 @@ body.manual-dark #drop-zone {
 }
 
 #intro-dude {
-  font-size: 80px;
-  margin-bottom: 10px;
+  font-size: 90px;
+  animation: shush 2s ease forwards;
 }
 
 #intro-text {
-  font-size: 20px;
-  letter-spacing: 0.03em;
+  font-size: 22px;
+  margin-top: 10px;
+  opacity: 0;
+  animation: fadeIn 1s ease 1.2s forwards;
+}
+
+/* Dude shushing animation */
+@keyframes shush {
+  0% { transform: translateY(20px) scale(0.9); opacity: 0; }
+  20% { transform: translateY(0) scale(1); opacity: 1; }
+  50% { transform: scale(1.05); }
+  70% { transform: scale(1); }
+  100% { transform: scale(1); }
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
 }
 
 @keyframes fadeOut {
-  to {
-    opacity: 0;
-    visibility: hidden;
-  }
+  to { opacity: 0; visibility: hidden; }
 }
   </style>
 </head>
@@ -253,7 +280,7 @@ body.manual-dark #drop-zone {
 
 <div id="intro-overlay">
   <div id="intro-content">
-    <div id="intro-dude">🕵️‍♂️</div>
+    <div id="intro-dude">🕵️‍♂️🤫</div>
     <div id="intro-text">Shhh... this stays between us.</div>
   </div>
 </div>
@@ -265,13 +292,13 @@ body.manual-dark #drop-zone {
   <form id="form" action="https://improved-anon-email.anonymousjustlc31.workers.dev" method="POST" enctype="multipart/form-data">
 
     <label>Recipient Name</label>
-    <input type="text" name="to_name" placeholder="e.g., Principal Smith" required>
+    <input type="text" name="to_name" placeholder="e.g., Big G" required>
 
     <label>Your Name (or Anonymous)</label>
     <input type="text" name="from_name" placeholder="e.g., Anonymous" required>
 
     <label>Reply-To Email</label>
-    <input type="email" name="email" placeholder="your-email@example.com" required>
+    <input type="email" name="email" placeholder="BigG@gmail.com" required>
 
     <label>Subject</label>
     <input type="text" name="subject" placeholder="Subject of your message" required>
@@ -316,10 +343,10 @@ const toast = document.getElementById("toast");
 const themeToggle = document.getElementById("theme-toggle");
 const introOverlay = document.getElementById("intro-overlay");
 
-/* INTRO OVERLAY REMOVE AFTER ANIMATION */
+/* Remove intro overlay after fade */
 setTimeout(() => {
   introOverlay.style.display = "none";
-}, 3500);
+}, 4000);
 
 /* DRAG & DROP */
 dropZone.addEventListener("click", () => fileInput.click());
@@ -403,21 +430,23 @@ form.addEventListener("submit", async (e) => {
     dropZone.textContent = "Drop files here or click to upload";
     document.getElementById("preview-images").innerHTML = "";
     Object.keys(previewFields).forEach(field => {
-      const output = document.getElementById(previewFields[field]);
-      output.textContent = "—";
+      document.getElementById(previewFields[field]).textContent = "—";
     });
   } else {
     alert("Error sending email");
   }
 });
 
-/* THEME TOGGLE (MOON ↔ SUN) */
+/* THEME TOGGLE */
 themeToggle.addEventListener("click", () => {
-  document.body.classList.toggle("manual-dark");
   if (document.body.classList.contains("manual-dark")) {
-    themeToggle.textContent = "☀️";
-  } else {
+    document.body.classList.remove("manual-dark");
+    document.body.classList.add("manual-light");
     themeToggle.textContent = "🌙";
+  } else {
+    document.body.classList.remove("manual-light");
+    document.body.classList.add("manual-dark");
+    themeToggle.textContent = "☀️";
   }
 });
 </script>
