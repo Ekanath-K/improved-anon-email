@@ -15,9 +15,10 @@ body {
   display: flex;
   justify-content: center;
   gap: 40px;
+  position: relative;
 }
 
-/* Dark mode */
+/* Dark mode (auto) */
 @media (prefers-color-scheme: dark) {
   body {
     background: #000;
@@ -78,6 +79,7 @@ textarea {
   color: #6e6e73;
   cursor: pointer;
   transition: 0.2s;
+  margin-bottom: 25px;
 }
 
 #drop-zone.dragover {
@@ -87,7 +89,7 @@ textarea {
 }
 
 /* Submit button */
-button {
+button[type="submit"] {
   width: 100%;
   padding: 14px;
   background: #007aff;
@@ -100,7 +102,7 @@ button {
   transition: 0.2s;
 }
 
-button:hover {
+button[type="submit"]:hover {
   background: #0062cc;
 }
 
@@ -140,10 +142,6 @@ button:hover {
   opacity: 1;
 }
 
-#drop-zone {
-  margin-bottom: 25px;
-}
-
 /* Preview panel */
 #preview-card {
   width: 420px;
@@ -164,7 +162,9 @@ button:hover {
     border-color: #3a3a3c;
   }
 }
-    body.manual-dark {
+
+/* Manual dark mode override */
+body.manual-dark {
   background: #000 !important;
   color: #f5f5f7 !important;
 }
@@ -186,23 +186,77 @@ body.manual-dark #drop-zone {
   color: #ccc !important;
 }
 
+/* Theme toggle button */
+#theme-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: #e5e5ea;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  transition: background 0.2s, transform 0.1s;
+  z-index: 20;
+}
+
+#theme-toggle:hover {
+  background: #d1d1d6;
+  transform: translateY(-1px);
+}
+
+/* Intro overlay */
+#intro-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  animation: fadeOut 1s ease 2.5s forwards;
+}
+
+#intro-content {
+  text-align: center;
+  color: #f5f5f7;
+}
+
+#intro-dude {
+  font-size: 80px;
+  margin-bottom: 10px;
+}
+
+#intro-text {
+  font-size: 20px;
+  letter-spacing: 0.03em;
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
   </style>
 </head>
 
 <body>
-<!-- Dark Mode Button Toggle -->
-<button id="theme-toggle" style="
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  padding: 8px 14px;
-  background: #e5e5ea;
-  border: none;
-  border-radius: 10px;
-  font-size: 14px;
-  cursor: pointer;
-  font-weight: 500;
-">Toggle Dark Mode</button>
+
+<button id="theme-toggle">🌙</button>
+
+<div id="intro-overlay">
+  <div id="intro-content">
+    <div id="intro-dude">🕵️‍♂️</div>
+    <div id="intro-text">Shhh... this stays between us.</div>
+  </div>
+</div>
 
 <!-- FORM CARD -->
 <div class="card">
@@ -211,16 +265,16 @@ body.manual-dark #drop-zone {
   <form id="form" action="https://improved-anon-email.anonymousjustlc31.workers.dev" method="POST" enctype="multipart/form-data">
 
     <label>Recipient Name</label>
-    <input type="text" name="to_name" placeholder="e.g., Big G" required>
+    <input type="text" name="to_name" placeholder="e.g., Principal Smith" required>
 
     <label>Your Name (or Anonymous)</label>
     <input type="text" name="from_name" placeholder="e.g., Anonymous" required>
 
     <label>Reply-To Email</label>
-    <input type="email" name="email" placeholder="bigG@gmail.com" required>
+    <input type="email" name="email" placeholder="your-email@example.com" required>
 
     <label>Subject</label>
-    <input type="text" name="subject" placeholder="Subject/Title of your message" required>
+    <input type="text" name="subject" placeholder="Subject of your message" required>
 
     <label>Message</label>
     <textarea name="message" placeholder="Write your message here..." required></textarea>
@@ -259,6 +313,13 @@ const fileInput = document.getElementById("file-input");
 const form = document.getElementById("form");
 const spinner = document.getElementById("spinner");
 const toast = document.getElementById("toast");
+const themeToggle = document.getElementById("theme-toggle");
+const introOverlay = document.getElementById("intro-overlay");
+
+/* INTRO OVERLAY REMOVE AFTER ANIMATION */
+setTimeout(() => {
+  introOverlay.style.display = "none";
+}, 3500);
 
 /* DRAG & DROP */
 dropZone.addEventListener("click", () => fileInput.click());
@@ -341,15 +402,24 @@ form.addEventListener("submit", async (e) => {
     form.reset();
     dropZone.textContent = "Drop files here or click to upload";
     document.getElementById("preview-images").innerHTML = "";
+    Object.keys(previewFields).forEach(field => {
+      const output = document.getElementById(previewFields[field]);
+      output.textContent = "—";
+    });
   } else {
     alert("Error sending email");
   }
 });
 
-  document.getElementById("theme-toggle").addEventListener("click", () => {
+/* THEME TOGGLE (MOON ↔ SUN) */
+themeToggle.addEventListener("click", () => {
   document.body.classList.toggle("manual-dark");
+  if (document.body.classList.contains("manual-dark")) {
+    themeToggle.textContent = "☀️";
+  } else {
+    themeToggle.textContent = "🌙";
+  }
 });
-
 </script>
 
 </body>
